@@ -6,17 +6,12 @@ import {
 } from "@microsoft/signalr";
 import apiClient, { BACKEND_HOST } from "./apiClient";
 
-const backendHost =
-  import.meta.env.VITE_BACKEND_URL ||
-  apiClient.defaults.baseURL?.replace(/\/api\/?$/, "") ||
-  BACKEND_HOST;
+const backendHost = import.meta.env.VITE_BACKEND_URL || BACKEND_HOST;
 
 const getHubUrl = () => {
-  if (import.meta.env.DEV && !import.meta.env.VITE_BACKEND_URL) {
-    return "/chatHub";
-  }
-
-  return `${backendHost}/chatHub`;
+  return import.meta.env.DEV && !import.meta.env.VITE_BACKEND_URL
+    ? "/chatHub"
+    : `${backendHost}/chatHub`;
 };
 
 let connection = null;
