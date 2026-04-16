@@ -1,0 +1,42 @@
+1.	AuthController — POST /api/auth/login
+•	Request (application/json): {"email":"user@example.com","password":"P@ssw0rd"}
+•	Success (200): {"token":"ey...","user":{"id":1,"email":"user@example.com","name":"John"}}
+•	Fail (401): {"error":"Invalid credentials"}
+2.	UsersController — GET /api/users/{id}
+•	Path param: id = 1
+•	Success (200): {"id":1,"email":"user@example.com","name":"John","createdAt":"2026-04-10T12:00:00Z"}
+•	Fail (404): {"error":"User not found"}
+3.	ProductsController
+•	GET /api/products
+•	Success (200): [{"id":10,"name":"T-shirt","price":19.99,"stock":50}, ...]
+•	POST /api/products (admin) — Request: {"name":"New Product","description":"Desc","price":9.99,"categoryId":2,"stock":100}
+•	Success (201): {"id":123,"name":"New Product","price":9.99,"stock":100}
+•	Fail (401 if not authenticated): {"error":"Authentication required"}
+•	Fail (400 missing field): {"errors":{"name":["The Name field is required."]}}
+4.	CategoriesController
+•	GET /api/categories
+•	Success (200): [{"id":2,"name":"Clothing","parentId":null}, ...]
+•	DELETE /api/categories/{id}
+•	Path param: id = 2
+•	Success (204): no body
+•	Fail (409 if has children/products): {"error":"Category cannot be deleted because it has child categories or products"}
+5.	OrdersController — POST /api/orders
+•	Request: {"userId":1,"items":[{"productId":10,"quantity":2}],"paymentMethod":"VnPay","shippingAddress":"..."}
+•	Success (201): {"orderId":555,"status":"Pending","total":39.98}
+•	Fail (409 insufficient stock): {"error":"Insufficient stock for product 10"}
+6.	PaymentController — POST /api/payment/checkout
+•	Request: {"orderId":555,"returnUrl":"https://example.com/return"}
+•	Success (200): {"paymentUrl":"https://vnpay/checkout?token=..."}
+•	Fail (400 invalid request): {"error":"Invalid orderId"}
+7.	ReviewsController — POST /api/reviews
+•	Request: {"productId":10,"userId":1,"rating":5,"comment":"Great!"}
+•	Success (201): {"id":77,"productId":10,"userId":1,"rating":5,"comment":"Great!","createdAt":"2026-04-16T10:00:00Z"}
+•	Fail (400 rating out of range): {"errors":{"rating":["Rating must be between 1 and 5"]}}
+8.	MessagesController — POST /api/messages
+•	Request: {"fromUserId":1,"toUserId":2,"content":"Hello, are you available?"}
+•	Success (201): {"id":300,"fromUserId":1,"toUserId":2,"content":"Hello, are you available?","sentAt":"2026-04-16T10:05:00Z"}
+•	Fail (400 empty content): {"errors":{"content":["Message content must not be empty"]}}
+9.	AdminController — GET /api/admin/users
+•	Requires admin Bearer token in Authorization header
+•	Success (200): [{"id":1,"email":"admin@example.com","role":"Admin"}, ...]
+•	Fail (403 for non-admin): {"error":"Forbidden: admin role required"}
